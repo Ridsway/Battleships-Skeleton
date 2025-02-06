@@ -17,11 +17,16 @@ def GetRowColumn():
         except ValueError:
             print("Incorrect data type")
 
-
-    Column = int(input("Please enter column: "))
-    while (Column < 0 or Column > 9):
-        print("Out of bounds of the board, please enter again")
-        Column = int(input("Please enter column: "))
+    valid = False
+    while not valid:
+        try:
+            Column = int(input("Please enter column: "))
+            if (Column < 0 or Column > 9):
+                print("Out of bounds of the board, please enter again")
+            else:
+                valid = True
+        except ValueError:
+            print("Incorrect data type")
 
     print()
     return Row, Column
@@ -35,8 +40,9 @@ def MakePlayerMove(Board, Ships):
         print("Sorry, (" + str(Row) + "," + str(Column) + ") is a miss.")
         Board[Row][Column] = "m"
     else:
-        print("Hit at (" + str(Row) + "," + str(Column) + ").")
-        Board[Row][Column] = "h"
+       ship_name = IdentifyShip(Board, Row, Column, Ships)
+       print(f"Hit at ({Row},{Column})! You hit a {ship_name}.")
+       Board[Row][Column] = "h"
 
 
 def SetUpBoard():
@@ -99,6 +105,12 @@ def ValidateBoatPosition(Board, Ship, Row, Column, Orientation):
                     return False
     return True
 
+def IdentifyShip(Board, Row, Column, Ships):
+    ship_symbols = {ship[0][0]: ship[0] for ship in Ships}
+    hit_symbol = Board[Row][Column]
+    return ship_symbols.get(hit_symbol, "Unknown ship")
+
+
 
 def CheckWin(Board):
     for Row in range(10):
@@ -135,13 +147,20 @@ def DisplayMenu():
     print()
     print("1. Start new game")
     print("2. Load training game")
-    print("9. Quit")
+    print("3. Quit")
     print()
 
 
 def GetMainMenuChoice():
     print("Please enter your choice: ", end="")
-    Choice = int(input())
+    choiceEntered = False
+    while not choiceEntered:
+        try:
+            Choice = int(input("Please enter your choice: "))
+            choiceEntered = True
+        except:
+            print("Try again...")
+
     print()
     return Choice
 
@@ -160,7 +179,7 @@ def PlayGame(Board, Ships):
 if __name__ == "__main__":
     TRAININGGAME = "Training.txt"
     MenuOption = 0
-    while not MenuOption == 9:
+    while not MenuOption == 3:
         Board = SetUpBoard()
         Ships = [["Aircraft Carrier", 5], ["Battleship", 4], ["Submarine", 3], ["Destroyer", 3], ["Patrol Boat", 2]]
         DisplayMenu()
